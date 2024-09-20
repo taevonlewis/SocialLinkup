@@ -7,14 +7,36 @@
 
 
 import SwiftUI
-import SwiftData
 
 @main
 struct SocialLinkupApp: App {
+    @StateObject private var viewModel = LinkedInViewModel()
+
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            HomeView()
+                .environmentObject(viewModel)
+                .onOpenURL { url in
+                    handleIncomingURL(url)
+                }
         }
     }
+    
+    private func handleIncomingURL(_ url: URL) {
+            guard url.scheme == "sociallinkup" else {
+                return
+            }
+            
+            if url.host == "auth", url.path == "/linkedin" {
+                let components = URLComponents(url: url, resolvingAgainstBaseURL: true)
+                let code = components?.queryItems?.first(where: { $0.name == "code" })?.value
+                let state = components?.queryItems?.first(where: { $0.name == "state" })?.value
+                
+                // Pass the code and state to the ViewModel to continue the OAuth flow
+                if let code = code, let state = state {
+                    NotificationCenter.default.post(name: Notification.Name("LinkedInAuthorization"), object: nil, userInfo: ["code": code, "state": state])
+                }
+            }
+        }
 }
