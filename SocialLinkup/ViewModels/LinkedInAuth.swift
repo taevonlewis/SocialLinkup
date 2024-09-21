@@ -10,10 +10,10 @@ import SwiftUI
 import WebKit
 import Combine
 
-class LinkedInViewModel: ObservableObject {
+class LinkedInViewModel: ObservableObject, OAuthViewModelProtocol {
     @Published var accessToken: String = ""
     @Published var state: String = ""
-    @Published var userURN: String? //
+    @Published var userURN: String?
     @Published var isLoggedIn = false
     
     let clientId = ProcessInfo.processInfo.environment["CLIENT_ID"] ?? "defaultClientId"
@@ -89,6 +89,33 @@ class LinkedInViewModel: ObservableObject {
         task.resume()
     }
     
+    func handleCallbackURL(_ url: URL) {
+            let code = getAuthorizationCode(from: url)
+            let state = getState(from: url)
+            
+            if let code = code, let state = state, state == self.state {
+                exchangeAuthorizationCodeForAccessToken(code: code)
+                isLoggedIn = true
+            } else {
+                print("State mismatch or invalid code.")
+            }
+        }
+    
+    private func getAuthorizationCode(from url: URL) -> String? {
+            if let components = URLComponents(url: url, resolvingAgainstBaseURL: true),
+               let code = components.queryItems?.first(where: { $0.name == "code" })?.value {
+                return code
+            }
+            return nil
+        }
+        
+        private func getState(from url: URL) -> String? {
+            if let components = URLComponents(url: url, resolvingAgainstBaseURL: true),
+               let state = components.queryItems?.first(where: { $0.name == "state" })?.value {
+                return state
+            }
+            return nil
+        }
     func fetchLinkedInProfile() {
         guard !accessToken.isEmpty else { return }
 

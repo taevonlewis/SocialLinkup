@@ -11,36 +11,36 @@ import SwiftData
 import WebKit
 
 struct LinkedInLoginView: View {
-    @StateObject private var viewModel = LinkedInViewModel()
+    @StateObject private var linkedinViewModel = LinkedInViewModel()
     @State private var showingWebView = false
     @State private var authorizationUrlRequest: URLRequest?
     @State private var isLoading = false
     
     var body: some View {
         VStack {
-            if viewModel.accessToken.isEmpty {
+            if linkedinViewModel.accessToken.isEmpty {
                 Button("Login with LinkedIn") {
-                    authorizationUrlRequest = viewModel.startAuthorizationFlow()
+                    authorizationUrlRequest = linkedinViewModel.startAuthorizationFlow()
                     showingWebView = true
                 }
             } else {
                 Text("Logged in with LinkedIn!")
                 Button("Fetch Email") {
-                    viewModel.fetchEmailAddress()
+                    linkedinViewModel.fetchEmailAddress()
                 }
                 Button("Post to LinkedIn") {
-                    viewModel.postContentToLinkedIn(message: "Hello LinkedIn from my iOS App!")
+                    linkedinViewModel.postContentToLinkedIn(message: "Hello LinkedIn from my iOS App!")
                 }
             }
         }
         .sheet(isPresented: $showingWebView, onDismiss: {
-            if viewModel.isLoggedIn {
+            if linkedinViewModel.isLoggedIn {
                 // Do something if needed after the WebView is closed
             }
         }) {
             if let request = authorizationUrlRequest {
                 ZStack {
-                    WebView(urlRequest: request, viewModel: viewModel, isLoading: $isLoading)
+                    WebView(urlRequest: request, viewModel: linkedinViewModel, isLoading: $isLoading)
                     if isLoading {
                         ProgressView("Loading...")
                             .progressViewStyle(CircularProgressViewStyle())
@@ -48,18 +48,17 @@ struct LinkedInLoginView: View {
                 }
             }
         }
-        .onChange(of: viewModel.isLoggedIn) { isLoggedIn in
-            if isLoggedIn {
-                showingWebView = false // Automatically close WebView when logged in
+        .onChange(of: linkedinViewModel.isLoggedIn) { oldValue, newValue in
+            if newValue {
+                showingWebView = false
             }
         }
     }
 }
 
-// WebView for LinkedIn Login
 struct WebView: UIViewRepresentable {
     let urlRequest: URLRequest
-    @ObservedObject var viewModel: LinkedInViewModel
+    var viewModel: any OAuthViewModelProtocol
     @Binding var isLoading: Bool
     
     func makeUIView(context: Context) -> WKWebView {
@@ -82,67 +81,31 @@ struct WebView: UIViewRepresentable {
             self.parent = parent
         }
         
-        // Show the loading indicator when the page starts loading
         func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
             parent.isLoading = true
         }
         
-        // Hide the loading indicator when the page finishes loading
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
             parent.isLoading = false
         }
         
-        // Intercept the custom URL scheme
-        func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+        func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping @MainActor (WKNavigationActionPolicy) -> Void) {
             if let url = navigationAction.request.url {
-                // Check if it's a custom scheme (like sociallinkup://)
                 if url.scheme == "sociallinkup" {
-                    // Handle custom URL schemes here
-                    if url.host == "auth", url.path == "/linkedin" {
-                        let code = getAuthorizationCode(from: url)
-                        let state = getState(from: url)
-                        
-                        // Validate the state and process the authorization code
-                        if let code = code, let state = state {
-                            if state == parent.viewModel.state {
-                                // Exchange the authorization code for access token
-                                parent.viewModel.exchangeAuthorizationCodeForAccessToken(code: code)
-                                
-                                // Automatically dismiss the WebView after successful login
-                                parent.viewModel.isLoggedIn = true
-                            } else {
-                                print("State mismatch!")
-                            }
-                        }
-                    }
-                    // Prevent WebView from trying to load the custom scheme
+                    parent.viewModel.handleCallbackURL(url)
                     decisionHandler(.cancel)
                     return
                 }
             }
-            // Otherwise, allow the WebView to proceed with the URL
             decisionHandler(.allow)
-        }
-        
-        private func getAuthorizationCode(from url: URL) -> String? {
-            if let components = URLComponents(url: url, resolvingAgainstBaseURL: true),
-               let code = components.queryItems?.first(where: { $0.name == "code" })?.value {
-                return code
-            }
-            return nil
-        }
-        
-        private func getState(from url: URL) -> String? {
-            if let components = URLComponents(url: url, resolvingAgainstBaseURL: true),
-               let state = components.queryItems?.first(where: { $0.name == "state" })?.value {
-                return state
-            }
-            return nil
         }
     }
 }
 
+protocol OAuthViewModelProtocol: ObservableObject {
+    func handleCallbackURL(_ url: URL)
+}
+
 #Preview {
     LinkedInLoginView()
-//        .environmentObject(LinkedInAuth())
 }
