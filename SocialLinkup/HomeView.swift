@@ -12,13 +12,8 @@ struct HomeView: View {
     
     var body: some View {
         NavigationView {
-            VStack {
-                LinkedInLoginView()
-                TwitterLoginView()
-                Spacer()
-            }
-            .navigationTitle("SocialLinkup")
-            .padding()
+            SocialLinkupView()
+                .navigationTitle("SocialLinkup")
         }
     }
 }
