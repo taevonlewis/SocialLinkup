@@ -5,7 +5,6 @@
 //  Copyright © 2024 TaeVon Lewis. All rights reserved.
 //
 
-
 import SwiftUI
 import SwiftData
 
@@ -15,8 +14,11 @@ struct HomeView: View {
         NavigationView {
             VStack {
                 LinkedInLoginView()
-                TwitterView()
+                TwitterLoginView()
+                Spacer()
             }
+            .navigationTitle("SocialLinkup")
+            .padding()
         }
     }
 }
