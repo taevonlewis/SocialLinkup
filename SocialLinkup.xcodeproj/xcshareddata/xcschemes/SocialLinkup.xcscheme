@@ -76,12 +76,12 @@
       </BuildableProductRunnable>
       <EnvironmentVariables>
          <EnvironmentVariable
-            key = "CLIENT_ID"
+            key = "LINKEDIN_CLIENT_ID"
             value = "78tkm4truo4nzh"
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
-            key = "CLIENT_SECRET"
+            key = "LINKEDIN_CLIENT_SECRET"
             value = "YSqyxtSahqxScvGF"
             isEnabled = "YES">
          </EnvironmentVariable>
@@ -98,6 +98,11 @@
          <EnvironmentVariable
             key = "TWITTER_CLIENT_SECRET"
             value = "tDkyIcCZJbdpNH-wd71-txBv0ac5q5RBtci2ZD11G2Juw_AHEX"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "CALLBACK_URL_SCHEME"
+            value = "sociallinkup"
             isEnabled = "YES">
          </EnvironmentVariable>
       </EnvironmentVariables>

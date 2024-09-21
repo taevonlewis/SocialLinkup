@@ -11,9 +11,10 @@ import AuthenticationServices
 import CryptoKit
 
 class TwitterViewModel: NSObject, ObservableObject, OAuthViewModelProtocol, ASWebAuthenticationPresentationContextProviding {
-    @Published var accessToken: String = ""
-    @Published var isLoggedIn = false
-
+    @Published private(set) var accessToken: String = ""
+    @Published private(set) var isLoggedIn = false
+    @Published private(set) var username: String = ""
+    
     private let consumerKey = ProcessInfo.processInfo.environment["TWITTER_CLIENT_ID"] ?? "defaultConsumerKey"
     private let consumerSecret = ProcessInfo.processInfo.environment["TWITTER_CLIENT_SECRET"] ?? "defaultConsumerSecret"
 
@@ -23,7 +24,7 @@ class TwitterViewModel: NSObject, ObservableObject, OAuthViewModelProtocol, ASWe
     private var state: String = ""
     private var refreshToken: String = ""
 
-    func generateCodeVerifier() -> String {
+    private func generateTwitterCodeVerifier() -> String {
         let characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._~"
         var codeVerifier = ""
         for _ in 0..<128 {
@@ -32,7 +33,7 @@ class TwitterViewModel: NSObject, ObservableObject, OAuthViewModelProtocol, ASWe
         return codeVerifier
     }
 
-    func generateCodeChallenge(codeVerifier: String) -> String {
+    private func generateTwitterCodeChallenge(codeVerifier: String) -> String {
         let data = Data(codeVerifier.utf8)
         let hashed = SHA256.hash(data: data)
         let hashData = Data(hashed)
@@ -44,15 +45,15 @@ class TwitterViewModel: NSObject, ObservableObject, OAuthViewModelProtocol, ASWe
         return base64url
     }
 
-    func constructAuthorizationURL() -> URL? {
+    func constructTwitterAuthorizationURL() -> URL? {
         let clientID = consumerKey
         let redirectURI = ProcessInfo.processInfo.environment["REDIRECT_URL"]
         let scopes = "tweet.write tweet.read users.read offline.access"
         let state = UUID().uuidString
         self.state = state
 
-        codeVerifier = generateCodeVerifier()
-        let codeChallenge = generateCodeChallenge(codeVerifier: codeVerifier)
+        codeVerifier = generateTwitterCodeVerifier()
+        let codeChallenge = generateTwitterCodeChallenge(codeVerifier: codeVerifier)
         let codeChallengeMethod = "S256"
 
         var components = URLComponents()
@@ -74,15 +75,15 @@ class TwitterViewModel: NSObject, ObservableObject, OAuthViewModelProtocol, ASWe
         return components.url
     }
 
-    func startAuthentication(presentationAnchor: ASPresentationAnchor) {
+    func startTwitterAuthentication(presentationAnchor: ASPresentationAnchor) {
         self.presentationAnchor = presentationAnchor
 
-        guard let authURL = constructAuthorizationURL() else {
+        guard let authURL = constructTwitterAuthorizationURL() else {
             print("Failed to construct authorization URL")
             return
         }
 
-        let callbackURLScheme = "sociallinkup"
+        let callbackURLScheme = ProcessInfo.processInfo.environment["CALLBACK_URL_SCHEME"] ?? "defaultCallbackURL"
 
         print("Starting Web Authentication Session with URL: \(authURL.absoluteString)")
         currentSession = ASWebAuthenticationSession(url: authURL, callbackURLScheme: callbackURLScheme) { callbackURL, error in
@@ -128,10 +129,10 @@ class TwitterViewModel: NSObject, ObservableObject, OAuthViewModelProtocol, ASWe
         }
 
 //        print("Authorization code received: \(code)")
-        exchangeCodeForToken(code: code)
+        exchangeTwitterCodeForToken(code: code)
     }
 
-    func exchangeCodeForToken(code: String) {
+    private func exchangeTwitterCodeForToken(code: String) {
         let tokenURL = "https://api.x.com/2/oauth2/token"
         var request = URLRequest(url: URL(string: tokenURL)!)
         request.httpMethod = "POST"
@@ -181,6 +182,7 @@ class TwitterViewModel: NSObject, ObservableObject, OAuthViewModelProtocol, ASWe
                     self.accessToken = tokenResponse.access_token
                     self.refreshToken = tokenResponse.refresh_token ?? ""
                     self.isLoggedIn = true
+                    self.getTwitterProfileDetails()
                 }
             } else {
                 print("Failed to decode token response")
@@ -190,7 +192,63 @@ class TwitterViewModel: NSObject, ObservableObject, OAuthViewModelProtocol, ASWe
         task.resume()
     }
 
-    func postTweet(tweetText: String) {
+    func getTwitterProfileDetails() {
+        guard !accessToken.isEmpty else {
+            print("Access Token is missing.")
+            return
+        }
+
+        let profileURL = "https://api.x.com/2/users/me?user.fields=created_at,description,profile_image_url,public_metrics,username,url"
+        var request = URLRequest(url: URL(string: profileURL)!)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                print("Error fetching profile: \(error.localizedDescription)")
+                return
+            }
+
+            guard let data = data else {
+                print("No data in response")
+                return
+            }
+
+            if let userResponse = try? JSONDecoder().decode(TwitterUserResponse.self, from: data) {
+                DispatchQueue.main.async {
+                    print("User ID: \(userResponse.data.id)")
+                    print("Name: \(userResponse.data.name)")
+                    
+                    self.username = userResponse.data.username
+                    print("Username: \(self.username)")
+                    
+                    print("Url: \(userResponse.data.url ?? "placeholderUrl")")
+                    
+                    if let createdAt = userResponse.data.created_at {
+                        print("Account Created At: \(createdAt)")
+                    }
+                    if let description = userResponse.data.description {
+                        print("Description: \(description)")
+                    }
+                    if let profileImageURL = userResponse.data.profile_image_url {
+                        print("Profile Image URL: \(profileImageURL)")
+                    }
+                    if let publicMetrics = userResponse.data.public_metrics {
+                        print("Followers Count: \(publicMetrics.followers_count)")
+                        print("Following Count: \(publicMetrics.following_count)")
+                        print("Tweet Count: \(publicMetrics.tweet_count)")
+                        print("Listed Count: \(publicMetrics.listed_count)")
+                    }
+                }
+            } else {
+                print("Failed to decode user response")
+            }
+        }
+
+        task.resume()
+    }
+    
+    func postTwitterTweet(tweetText: String) {
         guard !accessToken.isEmpty else {
             print("Access Token is missing.")
             return
@@ -230,7 +288,7 @@ class TwitterViewModel: NSObject, ObservableObject, OAuthViewModelProtocol, ASWe
 //                    print("Tweet response: \(responseString)")
 //                }
 
-                if let tweetResponse = try? JSONDecoder().decode(TweetResponse.self, from: data) {
+                if let tweetResponse = try? JSONDecoder().decode(TwitterTweetResponse.self, from: data) {
                     print("Tweet posted successfully with ID: \(tweetResponse.data.id)")
                 } else {
                     print("Failed to decode tweet response")
@@ -240,22 +298,5 @@ class TwitterViewModel: NSObject, ObservableObject, OAuthViewModelProtocol, ASWe
         } catch {
             print("Error serializing tweet body: \(error.localizedDescription)")
         }
-    }
-}
-
-struct TwitterTokenResponse: Codable {
-    let token_type: String
-    let expires_in: Int
-    let access_token: String
-    let scope: String
-    let refresh_token: String?
-}
-
-struct TweetResponse: Codable {
-    let data: TweetData
-
-    struct TweetData: Codable {
-        let id: String
-        let text: String
     }
 }
