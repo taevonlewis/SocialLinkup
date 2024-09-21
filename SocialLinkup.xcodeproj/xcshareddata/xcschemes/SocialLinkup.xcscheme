@@ -90,6 +90,16 @@
             value = "https://taevonlewis.github.io/sociallinkup-redirect/"
             isEnabled = "YES">
          </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "TWITTER_CLIENT_ID"
+            value = "YXQyR0txSzdURjZONER3cGdISVU6MTpjaQ"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "TWITTER_CLIENT_SECRET"
+            value = "tDkyIcCZJbdpNH-wd71-txBv0ac5q5RBtci2ZD11G2Juw_AHEX"
+            isEnabled = "YES">
+         </EnvironmentVariable>
       </EnvironmentVariables>
    </LaunchAction>
    <ProfileAction
