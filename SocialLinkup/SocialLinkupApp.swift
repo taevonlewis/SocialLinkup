@@ -33,7 +33,6 @@ struct SocialLinkupApp: App {
                 let code = components?.queryItems?.first(where: { $0.name == "code" })?.value
                 let state = components?.queryItems?.first(where: { $0.name == "state" })?.value
                 
-                // Pass the code and state to the ViewModel to continue the OAuth flow
                 if let code = code, let state = state {
                     NotificationCenter.default.post(name: Notification.Name("LinkedInAuthorization"), object: nil, userInfo: ["code": code, "state": state])
                 }
