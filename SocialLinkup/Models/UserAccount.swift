@@ -10,12 +10,12 @@ import SwiftData
 
 @Model
 class UserAccount {
-    @Attribute(.unique) var id = UUID()
-    var platform: String
-    var accessToken: String
-    var tokenSecret: String?
-    var expirationData: Date
-    var username: String
+    @Attribute(.unique) private(set) var id = UUID()
+    private(set) var platform: String
+    private(set) var accessToken: String
+    private(set) var tokenSecret: String?
+    private(set) var expirationData: Date
+    private(set) var username: String
     
     init(platform: String, accessToken: String, tokenSecret: String? = nil, expirationData: Date, username: String) {
         self.platform = platform
