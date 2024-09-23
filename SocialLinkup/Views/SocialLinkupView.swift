@@ -25,7 +25,7 @@ struct SocialLinkupView: View {
     init(socialLinkupViewModel: SocialLinkupViewModel) {
         _socialLinkupViewModel = StateObject(wrappedValue: socialLinkupViewModel)
     }
-    
+  
     var body: some View {
         VStack(spacing: 15) {
             if socialLinkupViewModel.isLoading {
