@@ -9,6 +9,9 @@ xcuserdata/
 
 .DS_Store
 
+# Firebase configuration file
+GoogleService-Info.plist
+
 ## Obj-C/Swift specific
 *.hmap
 *.swiftsourceinfo
