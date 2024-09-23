@@ -9,16 +9,24 @@ import SwiftUI
 import SwiftData
 
 struct HomeView: View {
+    @Environment(\.modelContext) private var modelContext: ModelContext
+    let socialLinkupViewModel: SocialLinkupViewModel
     
     var body: some View {
-        NavigationView {
-            SocialLinkupView()
-                .navigationTitle("SocialLinkup")
+        EnvironmentDebugView()
+        TabView {
+            Tab("Post Message", systemImage: "text.below.photo.fill") {
+                SocialLinkupView(socialLinkupViewModel: socialLinkupViewModel)
+            }
+            
+            Tab("Settings", systemImage: "gearshape") {
+                SettingsView(socialLinkupViewModel: socialLinkupViewModel)
+            }
         }
     }
 }
 
-#Preview {
-    HomeView()
-        .modelContainer(for: [UserAccount.self])
-}
+//#Preview {
+//    HomeView()
+//        .modelContainer(for: [UserAccount.self])
+//}
