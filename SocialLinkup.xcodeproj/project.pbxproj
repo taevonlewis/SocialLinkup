@@ -6,6 +6,15 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		CE11CB182C9FC50E00532293 /* SwiftData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE11CB142C9FB71600532293 /* SwiftData.framework */; };
+		CE11CB192C9FC51800532293 /* SwiftData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE11CB162C9FB75000532293 /* SwiftData.framework */; };
+		CE11CB1A2C9FC52400532293 /* SwiftData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE11CB162C9FB75000532293 /* SwiftData.framework */; };
+		CEE8D1FC2CA1DE7500338740 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = CEE8D1FB2CA1DE7500338740 /* FirebaseAnalytics */; };
+		CEE8D2002CA1E68E00338740 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = CEE8D1FF2CA1E68E00338740 /* FirebaseAuth */; };
+		CEE8D2022CA1E68E00338740 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = CEE8D2012CA1E68E00338740 /* FirebaseFirestore */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		CE7F705B2C9CD7C800FA16DB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -24,6 +33,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		CE11CB142C9FB71600532293 /* SwiftData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftData.framework; path = System/Library/Frameworks/SwiftData.framework; sourceTree = SDKROOT; };
+		CE11CB162C9FB75000532293 /* SwiftData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftData.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.1.sdk/System/Library/Frameworks/SwiftData.framework; sourceTree = DEVELOPER_DIR; };
 		CE7F70482C9CD7C600FA16DB /* SocialLinkup.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SocialLinkup.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE7F705A2C9CD7C800FA16DB /* SocialLinkupTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SocialLinkupTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE7F70642C9CD7C800FA16DB /* SocialLinkupUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SocialLinkupUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -65,6 +76,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CEE8D1FC2CA1DE7500338740 /* FirebaseAnalytics in Frameworks */,
+				CEE8D2022CA1E68E00338740 /* FirebaseFirestore in Frameworks */,
+				CEE8D2002CA1E68E00338740 /* FirebaseAuth in Frameworks */,
+				CE11CB182C9FC50E00532293 /* SwiftData.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -72,6 +87,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE11CB192C9FC51800532293 /* SwiftData.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -79,18 +95,29 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE11CB1A2C9FC52400532293 /* SwiftData.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		CE11CB132C9FB71600532293 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				CE11CB162C9FB75000532293 /* SwiftData.framework */,
+				CE11CB142C9FB71600532293 /* SwiftData.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		CE7F703F2C9CD7C600FA16DB = {
 			isa = PBXGroup;
 			children = (
 				CE7F704A2C9CD7C600FA16DB /* SocialLinkup */,
 				CE7F705D2C9CD7C800FA16DB /* SocialLinkupTests */,
 				CE7F70672C9CD7C800FA16DB /* SocialLinkupUITests */,
+				CE11CB132C9FB71600532293 /* Frameworks */,
 				CE7F70492C9CD7C600FA16DB /* Products */,
 			);
 			sourceTree = "<group>";
@@ -125,6 +152,9 @@
 			);
 			name = SocialLinkup;
 			packageProductDependencies = (
+				CEE8D1FB2CA1DE7500338740 /* FirebaseAnalytics */,
+				CEE8D1FF2CA1E68E00338740 /* FirebaseAuth */,
+				CEE8D2012CA1E68E00338740 /* FirebaseFirestore */,
 			);
 			productName = SocialLinkup;
 			productReference = CE7F70482C9CD7C600FA16DB /* SocialLinkup.app */;
@@ -208,6 +238,9 @@
 			);
 			mainGroup = CE7F703F2C9CD7C600FA16DB;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				CEE8D1FA2CA1DE7500338740 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = CE7F70492C9CD7C600FA16DB /* Products */;
 			projectDirPath = "";
@@ -575,6 +608,35 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		CEE8D1FA2CA1DE7500338740 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.2.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		CEE8D1FB2CA1DE7500338740 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CEE8D1FA2CA1DE7500338740 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		CEE8D1FF2CA1E68E00338740 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CEE8D1FA2CA1DE7500338740 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		CEE8D2012CA1E68E00338740 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CEE8D1FA2CA1DE7500338740 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = CE7F70402C9CD7C600FA16DB /* Project object */;
 }
