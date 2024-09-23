@@ -8,16 +8,6 @@
 import SwiftUI
 import SwiftData
 
-struct EnvironmentDebugView: View {
-    var body: some View {
-        VStack {
-            Text("LinkedIn Client ID: \(ProcessInfo.processInfo.environment["LINKEDIN_CLIENT_ID"] ?? "missing")")
-            Text("Twitter Client ID: \(ProcessInfo.processInfo.environment["TWITTER_CLIENT_ID"] ?? "missing")")
-        }
-        .padding()
-    }
-}
-
 struct SocialLinkupView: View {
     @StateObject private var socialLinkupViewModel: SocialLinkupViewModel
     @State private var message = ""
