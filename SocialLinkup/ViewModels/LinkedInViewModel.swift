@@ -23,7 +23,7 @@ class LinkedInViewModel: NSObject, OAuthViewModelProtocol {
     
     private var tokenKey = "LinkedInAccessKey"
     private var nameKey = "LinkedinName"
-    
+  
     private let authorizationEndpoint = "https://www.linkedin.com/oauth/v2/authorization"
     private let tokenEndpoint = "https://www.linkedin.com/oauth/v2/accessToken"
     private let userinfo_endpoint = "https://api.linkedin.com/v2/userinfo"

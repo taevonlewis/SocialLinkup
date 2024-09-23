@@ -22,7 +22,7 @@ class TwitterViewModel: NSObject, ObservableObject, OAuthViewModelProtocol, ASWe
 
     private var tokenKey = "TwitterAccessToken"
     private var usernameKey = "TwitterUsername"
-    
+  
     private var presentationAnchor: ASPresentationAnchor?
     private var currentSession: ASWebAuthenticationSession?
     private var codeVerifier: String = ""
@@ -250,7 +250,6 @@ class TwitterViewModel: NSObject, ObservableObject, OAuthViewModelProtocol, ASWe
                     self.username = userResponse.data.username
                     print("Username: \(self.username)")
                     KeychainHelper.save(key: self.usernameKey, value: self.username)
-
                     print("Url: \(userResponse.data.url ?? "placeholderUrl")")
                     
                     if let createdAt = userResponse.data.created_at {
