@@ -15,9 +15,14 @@ class TwitterViewModel: NSObject, ObservableObject, OAuthViewModelProtocol, ASWe
     @Published private(set) var isLoggedIn = false
     @Published private(set) var username: String = ""
     
-    private let consumerKey = ProcessInfo.processInfo.environment["TWITTER_CLIENT_ID"] ?? "defaultConsumerKey"
-    private let consumerSecret = ProcessInfo.processInfo.environment["TWITTER_CLIENT_SECRET"] ?? "defaultConsumerSecret"
+    private var consumerKey = ""
+    private var consumerSecret = ""
+    private var redirectUrl = ""
+    private var callbackUrlScheme = ""
 
+    private var tokenKey = "TwitterAccessToken"
+    private var usernameKey = "TwitterUsername"
+    
     private var presentationAnchor: ASPresentationAnchor?
     private var currentSession: ASWebAuthenticationSession?
     private var codeVerifier: String = ""
@@ -47,7 +52,7 @@ class TwitterViewModel: NSObject, ObservableObject, OAuthViewModelProtocol, ASWe
 
     func constructTwitterAuthorizationURL() -> URL? {
         let clientID = consumerKey
-        let redirectURI = ProcessInfo.processInfo.environment["REDIRECT_URL"]
+        let redirectUrl = redirectUrl
         let scopes = "tweet.write tweet.read users.read offline.access"
         let state = UUID().uuidString
         self.state = state
@@ -64,7 +69,7 @@ class TwitterViewModel: NSObject, ObservableObject, OAuthViewModelProtocol, ASWe
         components.queryItems = [
             URLQueryItem(name: "response_type", value: "code"),
             URLQueryItem(name: "client_id", value: clientID),
-            URLQueryItem(name: "redirect_uri", value: redirectURI),
+            URLQueryItem(name: "redirect_uri", value: redirectUrl),
             URLQueryItem(name: "scope", value: scopes),
             URLQueryItem(name: "state", value: state),
             URLQueryItem(name: "code_challenge", value: codeChallenge),
@@ -76,34 +81,50 @@ class TwitterViewModel: NSObject, ObservableObject, OAuthViewModelProtocol, ASWe
     }
 
     func startTwitterAuthentication(presentationAnchor: ASPresentationAnchor) {
-        self.presentationAnchor = presentationAnchor
-
-        guard let authURL = constructTwitterAuthorizationURL() else {
-            print("Failed to construct authorization URL")
-            return
-        }
-
-        let callbackURLScheme = ProcessInfo.processInfo.environment["CALLBACK_URL_SCHEME"] ?? "defaultCallbackURL"
-
-        print("Starting Web Authentication Session with URL: \(authURL.absoluteString)")
-        currentSession = ASWebAuthenticationSession(url: authURL, callbackURLScheme: callbackURLScheme) { callbackURL, error in
-            if let error = error {
-                print("Authentication error: \(error.localizedDescription)")
+        OAuthManager().fetchCredentials(for: "Twitter") { [weak self] consumerKey, consumerSecret, redirectUrl, callbackUrlScheme in
+            guard let self = self else {
                 return
             }
-
-            guard let callbackURL = callbackURL else {
-                print("No callback URL")
+            
+            self.consumerKey = consumerKey
+            self.consumerSecret = consumerSecret
+            self.redirectUrl = redirectUrl
+            self.callbackUrlScheme = callbackUrlScheme
+            
+            guard !consumerKey.isEmpty, !consumerSecret.isEmpty, !redirectUrl.isEmpty, !callbackUrlScheme.isEmpty else {
+                print("Invalid Twitter credentials")
                 return
             }
-
-            print("Authentication Callback URL: \(callbackURL.absoluteString)")
-            self.handleCallbackURL(callbackURL)
+            
+            self.presentationAnchor = presentationAnchor
+            
+            guard let authURL = self.constructTwitterAuthorizationURL() else {
+                print("Failed to construct authorization URL")
+                return
+            }
+            
+            let callbackURLScheme = callbackUrlScheme
+            
+            print("Starting Web Authentication Session with URL: \(authURL.absoluteString)")
+            self.currentSession = ASWebAuthenticationSession(url: authURL, callbackURLScheme: callbackURLScheme) { callbackURL, error in
+                if let error = error {
+                    print("Authentication error: \(error.localizedDescription)")
+                    return
+                }
+                
+                guard let callbackURL = callbackURL else {
+                    print("No callback URL")
+                    return
+                }
+                
+                print("Authentication Callback URL: \(callbackURL.absoluteString)")
+                self.handleCallbackURL(callbackURL)
+            }
+            
+            self.currentSession?.presentationContextProvider = self
+            self.currentSession?.prefersEphemeralWebBrowserSession = true
+            self.currentSession?.start()
         }
-
-        currentSession?.presentationContextProvider = self
-        currentSession?.prefersEphemeralWebBrowserSession = true
-        currentSession?.start()
     }
 
     func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
@@ -122,7 +143,6 @@ class TwitterViewModel: NSObject, ObservableObject, OAuthViewModelProtocol, ASWe
             return
         }
 
-        // Verify state
         guard let returnedState = returnedState, returnedState == self.state else {
             print("State mismatch: expected \(self.state), got \(returnedState ?? "nil")")
             return
@@ -139,7 +159,7 @@ class TwitterViewModel: NSObject, ObservableObject, OAuthViewModelProtocol, ASWe
         request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
 
         let clientID = consumerKey
-        let redirectURI = ProcessInfo.processInfo.environment["REDIRECT_URL"]
+        let redirectURI = redirectUrl
 
         let bodyParams = [
             "code": code,
@@ -150,7 +170,7 @@ class TwitterViewModel: NSObject, ObservableObject, OAuthViewModelProtocol, ASWe
         ]
 
         let bodyString = bodyParams
-            .map { "\($0.key)=\($0.value!.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")" }
+            .map { "\($0.key)=\($0.value.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")" }
             .joined(separator: "&")
 
         request.httpBody = bodyString.data(using: .utf8)
@@ -158,13 +178,8 @@ class TwitterViewModel: NSObject, ObservableObject, OAuthViewModelProtocol, ASWe
 //        print("Exchanging authorization code for token with body: \(bodyString)")
 
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            if let error = error {
-                print("Error exchanging code for token: \(error.localizedDescription)")
-                return
-            }
-
-            guard let data = data else {
-                print("No data in response")
+            guard let data = data, error == nil else {
+                print("Error exchanging code for token: \(error?.localizedDescription ?? "Unknown error")")
                 return
             }
 
@@ -182,7 +197,8 @@ class TwitterViewModel: NSObject, ObservableObject, OAuthViewModelProtocol, ASWe
                     self.accessToken = tokenResponse.access_token
                     self.refreshToken = tokenResponse.refresh_token ?? ""
                     self.isLoggedIn = true
-                    self.getTwitterProfileDetails()
+                    self.saveLoginState(token: self.accessToken)
+                    self.fetchTwitterProfile()
                 }
             } else {
                 print("Failed to decode token response")
@@ -192,8 +208,20 @@ class TwitterViewModel: NSObject, ObservableObject, OAuthViewModelProtocol, ASWe
         task.resume()
     }
 
-    func getTwitterProfileDetails() {
-        guard !accessToken.isEmpty else {
+    func saveLoginState(token: String) {
+        KeychainHelper.save(key: tokenKey, value: token)
+    }
+    
+    func loadLoginState() {
+        if let token = KeychainHelper.load(key: tokenKey), !token.isEmpty {
+            self.accessToken = token
+            self.isLoggedIn = true
+            self.username = KeychainHelper.load(key: usernameKey) ?? ""
+        }
+    }
+    
+    func fetchTwitterProfile() {
+        guard let token = KeychainHelper.load(key: tokenKey), !token.isEmpty else {
             print("Access Token is missing.")
             return
         }
@@ -221,7 +249,8 @@ class TwitterViewModel: NSObject, ObservableObject, OAuthViewModelProtocol, ASWe
                     
                     self.username = userResponse.data.username
                     print("Username: \(self.username)")
-                    
+                    KeychainHelper.save(key: self.usernameKey, value: self.username)
+
                     print("Url: \(userResponse.data.url ?? "placeholderUrl")")
                     
                     if let createdAt = userResponse.data.created_at {
@@ -249,8 +278,7 @@ class TwitterViewModel: NSObject, ObservableObject, OAuthViewModelProtocol, ASWe
     }
     
     func postTwitterTweet(tweetText: String) {
-        guard !accessToken.isEmpty else {
-            print("Access Token is missing.")
+        guard let token = KeychainHelper.load(key: tokenKey), !token.isEmpty else {
             return
         }
 
@@ -298,5 +326,14 @@ class TwitterViewModel: NSObject, ObservableObject, OAuthViewModelProtocol, ASWe
         } catch {
             print("Error serializing tweet body: \(error.localizedDescription)")
         }
+    }
+    
+    func logoutOfTwitter() {
+        accessToken = ""
+        username = ""
+        isLoggedIn = false
+        KeychainHelper.delete(key: tokenKey)
+        KeychainHelper.delete(key: usernameKey)
+        print("Logged out of LinkedIn account.")
     }
 }
