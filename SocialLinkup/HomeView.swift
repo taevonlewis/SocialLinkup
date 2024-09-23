@@ -13,7 +13,6 @@ struct HomeView: View {
     let socialLinkupViewModel: SocialLinkupViewModel
     
     var body: some View {
-        EnvironmentDebugView()
         TabView {
             Tab("Post Message", systemImage: "text.below.photo.fill") {
                 SocialLinkupView(socialLinkupViewModel: socialLinkupViewModel)
