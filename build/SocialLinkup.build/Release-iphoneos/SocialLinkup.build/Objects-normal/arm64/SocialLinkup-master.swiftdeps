@@ -1,0 +1,24 @@
+version: "Apple Swift version 6.0 (swiftlang-6.0.0.7.6 clang-1600.0.24.1)"
+options: "5b788116e01a34d2a013d8e6fe40b5060d2258abb9479cf774d6b780a1ad4ee5"
+build_start_time: [1727209243, 663245000]
+build_end_time: [1727209244, 559563000]
+inputs:
+  "/Users/taevonlewis/Documents/repos/SocialLinkup/SocialLinkup/HomeView.swift": !dirty [1727202471, 858567714]
+  "/Users/taevonlewis/Documents/repos/SocialLinkup/SocialLinkup/Models/LinkedInModels.swift": !dirty [1727199069, 123425006]
+  "/Users/taevonlewis/Documents/repos/SocialLinkup/SocialLinkup/Models/ScheduledPost.swift": !dirty [1727199069, 123727798]
+  "/Users/taevonlewis/Documents/repos/SocialLinkup/SocialLinkup/Models/TwitterModels.swift": !dirty [1727199069, 123878240]
+  "/Users/taevonlewis/Documents/repos/SocialLinkup/SocialLinkup/Models/UserAccount.swift": !dirty [1727199069, 124027013]
+  "/Users/taevonlewis/Documents/repos/SocialLinkup/SocialLinkup/Protocols/KeychainHelper.swift": !dirty [1727199069, 124623537]
+  "/Users/taevonlewis/Documents/repos/SocialLinkup/SocialLinkup/Protocols/OAuthManager.swift": !dirty [1727199069, 124773502]
+  "/Users/taevonlewis/Documents/repos/SocialLinkup/SocialLinkup/Protocols/OAuthViewModelProtocol.swift": !dirty [1727199069, 125034809]
+  "/Users/taevonlewis/Documents/repos/SocialLinkup/SocialLinkup/SocialLinkupApp.swift": !dirty [1727201611, 502605438]
+  "/Users/taevonlewis/Documents/repos/SocialLinkup/SocialLinkup/ViewModels/LinkedInViewModel.swift": !dirty [1727199069, 125677347]
+  "/Users/taevonlewis/Documents/repos/SocialLinkup/SocialLinkup/ViewModels/SocialLinkupViewModel.swift": !dirty [1727199069, 125838994]
+  "/Users/taevonlewis/Documents/repos/SocialLinkup/SocialLinkup/ViewModels/TwitterViewModel.swift": !dirty [1727199069, 126099824]
+  "/Users/taevonlewis/Documents/repos/SocialLinkup/SocialLinkup/Views/LinkedInLoginView.swift": !dirty [1727199069, 126389026]
+  "/Users/taevonlewis/Documents/repos/SocialLinkup/SocialLinkup/Views/LoadingView.swift": !dirty [1727199069, 126532077]
+  "/Users/taevonlewis/Documents/repos/SocialLinkup/SocialLinkup/Views/SettingsView.swift": !dirty [1727199069, 126691579]
+  "/Users/taevonlewis/Documents/repos/SocialLinkup/SocialLinkup/Views/SocialLinkupView.swift": !dirty [1727199069, 126826286]
+  "/Users/taevonlewis/Documents/repos/SocialLinkup/SocialLinkup/Views/TwitterLoginView.swift": !dirty [1727199069, 126964330]
+  ? "/Users/taevonlewis/Documents/repos/SocialLinkup/build/SocialLinkup.build/Release-iphoneos/SocialLinkup.build/DerivedSources/GeneratedAssetSymbols.swift"
+  : !dirty [1727209243, 602043360]

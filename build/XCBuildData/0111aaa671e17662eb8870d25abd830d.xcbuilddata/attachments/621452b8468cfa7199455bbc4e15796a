@@ -1,0 +1,4 @@
+module grpcppWrapper {
+umbrella "/Users/taevonlewis/Library/Developer/Xcode/DerivedData/SocialLinkup-dxxczabrayohgfgtslgfgpenslyr/SourcePackages/checkouts/grpc-binary/grpcpp-Wrapper/include"
+export *
+}

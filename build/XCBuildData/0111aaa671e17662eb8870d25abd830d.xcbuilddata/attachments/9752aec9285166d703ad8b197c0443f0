@@ -1,0 +1,4 @@
+module GoogleAppMeasurementTarget {
+umbrella "/Users/taevonlewis/Library/Developer/Xcode/DerivedData/SocialLinkup-dxxczabrayohgfgtslgfgpenslyr/SourcePackages/checkouts/GoogleAppMeasurement/GoogleAppMeasurementWrapper/include"
+export *
+}

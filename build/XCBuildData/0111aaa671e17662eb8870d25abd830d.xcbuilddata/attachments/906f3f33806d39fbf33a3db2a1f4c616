@@ -1,0 +1,4 @@
+module abslWrapper {
+umbrella "/Users/taevonlewis/Library/Developer/Xcode/DerivedData/SocialLinkup-dxxczabrayohgfgtslgfgpenslyr/SourcePackages/checkouts/abseil-cpp-binary/absl-Wrapper/include"
+export *
+}
