@@ -1,0 +1,4 @@
+module GTMSessionFetcherCore {
+umbrella "/Users/taevonlewis/Library/Developer/Xcode/DerivedData/SocialLinkup-dxxczabrayohgfgtslgfgpenslyr/SourcePackages/checkouts/gtm-session-fetcher/Sources/Core/Public"
+export *
+}
