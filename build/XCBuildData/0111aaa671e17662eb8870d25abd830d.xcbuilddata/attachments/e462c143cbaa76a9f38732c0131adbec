@@ -1,4 +1,0 @@
-module nanopb {
-umbrella "/Users/taevonlewis/Library/Developer/Xcode/DerivedData/SocialLinkup-dxxczabrayohgfgtslgfgpenslyr/SourcePackages/checkouts/nanopb/spm_headers"
-export *
-}

@@ -1,4 +1,0 @@
-module leveldb {
-umbrella "/Users/taevonlewis/Library/Developer/Xcode/DerivedData/SocialLinkup-dxxczabrayohgfgtslgfgpenslyr/SourcePackages/checkouts/leveldb/include"
-export *
-}

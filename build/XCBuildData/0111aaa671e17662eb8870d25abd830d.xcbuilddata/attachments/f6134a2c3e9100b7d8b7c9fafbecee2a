@@ -1,4 +1,0 @@
-module GoogleUtilities_Reachability {
-umbrella "/Users/taevonlewis/Library/Developer/Xcode/DerivedData/SocialLinkup-dxxczabrayohgfgtslgfgpenslyr/SourcePackages/checkouts/GoogleUtilities/GoogleUtilities/Reachability/Public"
-export *
-}
